@@ -73,6 +73,7 @@ namespace ByCotton
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
             }
 
             SqlConnection cn = new SqlConnection(Global.DATABASE);
@@ -163,42 +164,51 @@ namespace ByCotton
 
         private void loadData()
         {
-            images.Clear();
-            string query;
-            SqlCommand cmd;
-
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
-
-            query =
-                "SELECT code, image " +
-                "FROM Product";
-
-            cmd = new SqlCommand(query, cn);
-
-            SqlDataReader r = cmd.ExecuteReader();
-
-            while (r.Read())
+            try
             {
-                images.Add(r.GetInt32(0), r.GetString(1));
+                images.Clear();
+                string query;
+                SqlCommand cmd;
+
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
+
+                query =
+                    "SELECT code, image " +
+                    "FROM Product";
+
+                cmd = new SqlCommand(query, cn);
+
+                SqlDataReader r = cmd.ExecuteReader();
+
+                while (r.Read())
+                {
+                    images.Add(r.GetInt32(0), r.GetString(1));
+                }
+                r.Close();
+
+                query =
+                    "SELECT code, name, amount, price " +
+                    "FROM Product";
+                cmd = new SqlCommand(query, cn);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "Product");
+                productsDataGridView.DataSource = ds.Tables["Product"].DefaultView;
+
+                cn.Close();
+
+                productsDataGridView.Columns[0].HeaderText = "Mã";
+                productsDataGridView.Columns[1].HeaderText = "Tên";
+                productsDataGridView.Columns[2].HeaderText = "Số lượng";
+                productsDataGridView.Columns[3].HeaderText = "Đơn giá";
             }
-            r.Close();
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
 
-            query = 
-                "SELECT code, name, amount, price " +
-                "FROM Product";
-            cmd = new SqlCommand(query, cn);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "Product");
-            productsDataGridView.DataSource = ds.Tables["Product"].DefaultView;
-
-            cn.Close();
-
-            productsDataGridView.Columns[0].HeaderText = "Mã";
-            productsDataGridView.Columns[1].HeaderText = "Tên";
-            productsDataGridView.Columns[2].HeaderText = "Số lượng";
-            productsDataGridView.Columns[3].HeaderText = "Đơn giá";
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void clearProductButton_Click(object sender, EventArgs e)

@@ -20,27 +20,36 @@ namespace ByCotton
 
         private void loadData()
         {
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
+            try
+            {
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
 
-            string query =
-                "SELECT I.invoice, P.name, R.amount, R.price, R.create_at " +
-                "FROM Refund R " +
-                "JOIN InvoiceDetail I ON I.refund = R.code " +
-                "JOIN Product P ON P.code = I.product";
-            SqlCommand cmd = new SqlCommand(query, cn);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "Refund");
-            dataGridView.DataSource = ds.Tables["Refund"].DefaultView;
+                string query =
+                    "SELECT I.invoice, P.name, R.amount, R.price, R.create_at " +
+                    "FROM Refund R " +
+                    "JOIN InvoiceDetail I ON I.refund = R.code " +
+                    "JOIN Product P ON P.code = I.product";
+                SqlCommand cmd = new SqlCommand(query, cn);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "Refund");
+                dataGridView.DataSource = ds.Tables["Refund"].DefaultView;
 
-            cn.Close();
+                cn.Close();
 
-            dataGridView.Columns[0].HeaderText = "Mã";
-            dataGridView.Columns[1].HeaderText = "Tên sản phẩm";
-            dataGridView.Columns[2].HeaderText = "Số lượng";
-            dataGridView.Columns[3].HeaderText = "Tổng tiền";
-            dataGridView.Columns[4].HeaderText = "Ngày tạo";
+                dataGridView.Columns[0].HeaderText = "Mã";
+                dataGridView.Columns[1].HeaderText = "Tên sản phẩm";
+                dataGridView.Columns[2].HeaderText = "Số lượng";
+                dataGridView.Columns[3].HeaderText = "Tổng tiền";
+                dataGridView.Columns[4].HeaderText = "Ngày tạo";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
+
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void warehouseButton_Click(object sender, EventArgs e)

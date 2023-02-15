@@ -32,6 +32,7 @@
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.homeButton = new System.Windows.Forms.Button();
             this.cartButton = new System.Windows.Forms.Button();
+            this.profileButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.logoutButton = new System.Windows.Forms.Button();
             this.codeLabel = new System.Windows.Forms.Label();
@@ -47,7 +48,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.totalLabel = new System.Windows.Forms.Label();
             this.addButton = new System.Windows.Forms.Button();
-            this.profileButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel3.SuspendLayout();
@@ -106,6 +106,21 @@
             this.cartButton.Text = "GIỎ HÀNG";
             this.cartButton.UseVisualStyleBackColor = false;
             this.cartButton.Click += new System.EventHandler(this.cartButton_Click);
+            // 
+            // profileButton
+            // 
+            this.profileButton.BackColor = System.Drawing.Color.Gray;
+            this.profileButton.FlatAppearance.BorderSize = 0;
+            this.profileButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.profileButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.profileButton.ForeColor = System.Drawing.Color.White;
+            this.profileButton.Location = new System.Drawing.Point(267, 3);
+            this.profileButton.Name = "profileButton";
+            this.profileButton.Size = new System.Drawing.Size(126, 40);
+            this.profileButton.TabIndex = 20;
+            this.profileButton.Text = "TÀI KHOẢN";
+            this.profileButton.UseVisualStyleBackColor = false;
+            this.profileButton.Click += new System.EventHandler(this.profileButton_Click);
             // 
             // flowLayoutPanel3
             // 
@@ -265,21 +280,6 @@
             this.addButton.UseVisualStyleBackColor = false;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
-            // profileButton
-            // 
-            this.profileButton.BackColor = System.Drawing.Color.Gray;
-            this.profileButton.FlatAppearance.BorderSize = 0;
-            this.profileButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.profileButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.profileButton.ForeColor = System.Drawing.Color.White;
-            this.profileButton.Location = new System.Drawing.Point(267, 3);
-            this.profileButton.Name = "profileButton";
-            this.profileButton.Size = new System.Drawing.Size(126, 40);
-            this.profileButton.TabIndex = 20;
-            this.profileButton.Text = "TÀI KHOẢN";
-            this.profileButton.UseVisualStyleBackColor = false;
-            this.profileButton.Click += new System.EventHandler(this.profileButton_Click);
-            // 
             // ProductDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -301,6 +301,7 @@
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "ProductDetail";
             this.Text = "ProductDetail";
+            this.Load += new System.EventHandler(this.ProductDetail_Load);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel3.ResumeLayout(false);

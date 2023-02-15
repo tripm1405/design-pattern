@@ -30,31 +30,40 @@ namespace ByCotton
 
         private void loadData()
         {
-            string query = 
-                "SELECT code, name, image " +
-                "FROM Product " +
-                "WHERE amount > 0";
-
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            SqlCommand cmd = new SqlCommand(query, cn);
-            cn.Open();
-            SqlDataReader r = cmd.ExecuteReader();
-
-            ImageList imageList = new ImageList();
-            imageList.ImageSize = new Size(200, 200);
-            listView.LargeImageList = imageList;
-            while (r.Read())
+            try
             {
-                string code = r.GetInt32(0).ToString();
+                string query =
+                    "SELECT code, name, image " +
+                    "FROM Product " +
+                    "WHERE amount > 0";
 
-                imageList.Images.Add(code, Image.FromFile(Global.IMAGE_PATH + r.GetString(2)));
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                SqlCommand cmd = new SqlCommand(query, cn);
+                cn.Open();
+                SqlDataReader r = cmd.ExecuteReader();
 
-                ListViewItem listViewItem0 = listView.Items.Add(new ListViewItem(r.GetString(1)));
-                listViewItem0.ImageKey = code;
+                ImageList imageList = new ImageList();
+                imageList.ImageSize = new Size(200, 200);
+                listView.LargeImageList = imageList;
+                while (r.Read())
+                {
+                    string code = r.GetInt32(0).ToString();
+
+                    imageList.Images.Add(code, Image.FromFile(Global.IMAGE_PATH + r.GetString(2)));
+
+                    ListViewItem listViewItem0 = listView.Items.Add(new ListViewItem(r.GetString(1)));
+                    listViewItem0.ImageKey = code;
+                }
+
+                r.Close();
+                cn.Close();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
 
-            r.Close();
-            cn.Close();
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void cartButton_Click(object sender, EventArgs e)

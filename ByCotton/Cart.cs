@@ -74,52 +74,61 @@ namespace ByCotton
 
         private void order()
         {
-            SqlCommand cmd;
-            string query;
-
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
-
-            query =
-                "SELECT COUNT(*) " +
-                "FROM Invoice";
-
-            cmd = new SqlCommand(query, cn);
-
-            SqlDataReader r = cmd.ExecuteReader();
-            r.Read();
-            string invoice = (r.GetInt32(0) + 1).ToString();
-            r.Close();
-
-            query =
-                "INSERT INTO Invoice (code, customer, create_at) VALUES " +
-                "(@code, @customer, GETDATE())";
-
-            cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@code", invoice);
-            cmd.Parameters.AddWithValue("@customer", Global.account.phone);
-            cmd.ExecuteReader().Close();
-
-            foreach (ListViewItem item in listView.Items)
+            try
             {
+                SqlCommand cmd;
+                string query;
+
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
+
                 query =
-                    "INSERT INTO InvoiceDetail(invoice, product, amount, price, refund) VALUES " +
-                    "(@invoice, @product, @amount, @price, NULL)";
+                    "SELECT COUNT(*) " +
+                    "FROM Invoice";
 
                 cmd = new SqlCommand(query, cn);
-                cmd.Parameters.AddWithValue("@invoice", invoice);
-                cmd.Parameters.AddWithValue("@product", item.SubItems[0].Text);
-                cmd.Parameters.AddWithValue("@amount", int.Parse(item.SubItems[2].Text));
-                cmd.Parameters.AddWithValue("@price", int.Parse(item.SubItems[3].Text));
+
+                SqlDataReader r = cmd.ExecuteReader();
+                r.Read();
+                string invoice = (r.GetInt32(0) + 1).ToString();
+                r.Close();
+
+                query =
+                    "INSERT INTO Invoice (code, customer, create_at) VALUES " +
+                    "(@code, @customer, GETDATE())";
+
+                cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@code", invoice);
+                cmd.Parameters.AddWithValue("@customer", Global.account.phone);
                 cmd.ExecuteReader().Close();
+
+                foreach (ListViewItem item in listView.Items)
+                {
+                    query =
+                        "INSERT INTO InvoiceDetail(invoice, product, amount, price, refund) VALUES " +
+                        "(@invoice, @product, @amount, @price, NULL)";
+
+                    cmd = new SqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@invoice", invoice);
+                    cmd.Parameters.AddWithValue("@product", item.SubItems[0].Text);
+                    cmd.Parameters.AddWithValue("@amount", int.Parse(item.SubItems[2].Text));
+                    cmd.Parameters.AddWithValue("@price", int.Parse(item.SubItems[3].Text));
+                    cmd.ExecuteReader().Close();
+                }
+
+                cn.Close();
+
+                Global.cart.Clear();
+                MessageBox.Show("ĐẶT HÀNG THÀNH CÔNG!\nSẢN PHẨM SẼ ĐƯỢC CHUYỂN TỚI TRONG VÒNG 3 NGÀY!");
+                (new Home()).Show();
+                this.Hide();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
 
-            cn.Close();
-
-            Global.cart.Clear();
-            MessageBox.Show("ĐẶT HÀNG THÀNH CÔNG!\nSẢN PHẨM SẼ ĐƯỢC CHUYỂN TỚI TRONG VÒNG 3 NGÀY!");
-            (new Home()).Show();
-            this.Hide();
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

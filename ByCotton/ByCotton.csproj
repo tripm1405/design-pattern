@@ -113,6 +113,7 @@
     <Compile Include="InvoiceHistoryManger.Designer.cs">
       <DependentUpon>InvoiceHistoryManger.cs</DependentUpon>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="Login.cs">
       <SubType>Form</SubType>
     </Compile>

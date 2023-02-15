@@ -43,34 +43,43 @@ namespace ByCotton
 
         private void loadData()
         {
-            string INVOICE_DETAIL =
-                "SELECT invoice, SUM(amount*price) AS price " +
-                "FROM InvoiceDetail " +
-                "GROUP BY invoice";
+            try
+            {
+                string INVOICE_DETAIL =
+                    "SELECT invoice, SUM(amount*price) AS price " +
+                    "FROM InvoiceDetail " +
+                    "GROUP BY invoice";
 
-            string query =
-                "SELECT I.code, I.customer, ID.price, I.create_at " +
-                "FROM Invoice I " +
-                "JOIN ( " +
-                    INVOICE_DETAIL +
-                ") ID ON ID.invoice = I.code " +
-                "WHERE customer = @customer";
+                string query =
+                    "SELECT I.code, I.customer, ID.price, I.create_at " +
+                    "FROM Invoice I " +
+                    "JOIN ( " +
+                        INVOICE_DETAIL +
+                    ") ID ON ID.invoice = I.code " +
+                    "WHERE customer = @customer";
 
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
-            SqlCommand cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@customer", Global.account.phone);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "Account");
-            dataGridView.DataSource = ds.Tables["Account"].DefaultView;
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
+                SqlCommand cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@customer", Global.account.phone);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "Account");
+                dataGridView.DataSource = ds.Tables["Account"].DefaultView;
 
-            cn.Close();
+                cn.Close();
 
-            dataGridView.Columns[0].HeaderText = "Mã";
-            dataGridView.Columns[1].HeaderText = "Khách hàng";
-            dataGridView.Columns[2].HeaderText = "Tổng tiền";
-            dataGridView.Columns[3].HeaderText = "Ngày tạo";
+                dataGridView.Columns[0].HeaderText = "Mã";
+                dataGridView.Columns[1].HeaderText = "Khách hàng";
+                dataGridView.Columns[2].HeaderText = "Tổng tiền";
+                dataGridView.Columns[3].HeaderText = "Ngày tạo";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
+
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void dataGridView_SelectionChanged(object sender, EventArgs e)

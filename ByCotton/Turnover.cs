@@ -21,44 +21,65 @@ namespace ByCotton
 
         private string get_total_d(string d)
         {
+            try
+            {
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
 
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
+                string query = "SELECT * FROM dbo.turnover_d(@d)";
+                SqlCommand cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@d", d);
+                SqlDataReader r = cmd.ExecuteReader();
+                r.Read();
 
-            string query = "SELECT * FROM dbo.turnover_d(@d)";
-            SqlCommand cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@d", d);
-            SqlDataReader r = cmd.ExecuteReader();
-            r.Read();
+                string result = r.GetInt32(0).ToString();
 
-            string result = r.GetInt32(0).ToString();
+                r.Close();
 
-            r.Close();
+                cn.Close();
 
-            cn.Close();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
 
-            return result;
+                Logger.GetInstance().write(ex);
+
+                return "";
+            }
         }
 
         private string get_total_s(string s, string e)
-        { 
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
+        {
+            try
+            {
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
 
-            string query = "SELECT * FROM dbo.turnover_s(@s, @e)";
-            SqlCommand cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@s", s);
-            cmd.Parameters.AddWithValue("@e", e);
-            SqlDataReader r = cmd.ExecuteReader();
-            r.Read();
+                string query = "SELECT * FROM dbo.turnover_s(@s, @e)";
+                SqlCommand cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@s", s);
+                cmd.Parameters.AddWithValue("@e", e);
+                SqlDataReader r = cmd.ExecuteReader();
+                r.Read();
 
-            string result = r.GetInt32(0).ToString();
+                string result = r.GetInt32(0).ToString();
 
-            r.Close();
+                r.Close();
 
-            cn.Close();
+                cn.Close();
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
+
+                Logger.GetInstance().write(ex);
+
+                return "";
+            }
         }
 
         private void warehouseButton_Click(object sender, EventArgs e)

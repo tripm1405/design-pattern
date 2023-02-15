@@ -49,28 +49,37 @@ namespace ByCotton
 
         private void loadData()
         {
-            string query =
-                "SELECT id.code, p.name, id.amount, id.price, (id.amount * id.price) AS total " +
-                "FROM InvoiceDetail id " +
-                "JOIN Product p ON p.code = id.product " +
-                "WHERE invoice = @invoice";
+            try
+            {
+                string query =
+                    "SELECT id.code, p.name, id.amount, id.price, (id.amount * id.price) AS total " +
+                    "FROM InvoiceDetail id " +
+                    "JOIN Product p ON p.code = id.product " +
+                    "WHERE invoice = @invoice";
 
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
-            SqlCommand cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@invoice", Global.invoiceID);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "InvoiceDetail");
-            dataGridView.DataSource = ds.Tables["InvoiceDetail"].DefaultView;
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
+                SqlCommand cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@invoice", Global.invoiceID);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "InvoiceDetail");
+                dataGridView.DataSource = ds.Tables["InvoiceDetail"].DefaultView;
 
-            cn.Close();
+                cn.Close();
 
-            dataGridView.Columns[0].HeaderText = "Mã";
-            dataGridView.Columns[1].HeaderText = "Tên sản phẩm";
-            dataGridView.Columns[2].HeaderText = "Số lượng";
-            dataGridView.Columns[3].HeaderText = "Đơn giá";
-            dataGridView.Columns[4].HeaderText = "Tổng tiền";
+                dataGridView.Columns[0].HeaderText = "Mã";
+                dataGridView.Columns[1].HeaderText = "Tên sản phẩm";
+                dataGridView.Columns[2].HeaderText = "Số lượng";
+                dataGridView.Columns[3].HeaderText = "Đơn giá";
+                dataGridView.Columns[4].HeaderText = "Tổng tiền";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
+
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void logoutButton_Click(object sender, EventArgs e)

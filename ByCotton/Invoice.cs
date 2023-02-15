@@ -38,25 +38,34 @@ namespace ByCotton
 
         private void loadData()
         {
-            string query = 
-                "SELECT code, name, amount, price " +
-                "FROM Product " +
-                "WHERE amount > 0";
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
+            try
+            {
+                string query =
+                    "SELECT code, name, amount, price " +
+                    "FROM Product " +
+                    "WHERE amount > 0";
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
 
-            SqlCommand cmd = new SqlCommand(query, cn);
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataSet ds = new DataSet();
-            da.Fill(ds, "Product");
-            productsDataGridView.DataSource = ds.Tables["Product"].DefaultView;
+                SqlCommand cmd = new SqlCommand(query, cn);
+                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                DataSet ds = new DataSet();
+                da.Fill(ds, "Product");
+                productsDataGridView.DataSource = ds.Tables["Product"].DefaultView;
 
-            cn.Close();
+                cn.Close();
 
-            productsDataGridView.Columns[0].HeaderText = "Mã";
-            productsDataGridView.Columns[1].HeaderText = "Tên";
-            productsDataGridView.Columns[2].HeaderText = "Số lượng";
-            productsDataGridView.Columns[3].HeaderText = "Giá";
+                productsDataGridView.Columns[0].HeaderText = "Mã";
+                productsDataGridView.Columns[1].HeaderText = "Tên";
+                productsDataGridView.Columns[2].HeaderText = "Số lượng";
+                productsDataGridView.Columns[3].HeaderText = "Giá";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
+
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void refundButton_Click(object sender, EventArgs e)
@@ -135,95 +144,104 @@ namespace ByCotton
 
         private void confirmButton_Click(object sender, EventArgs e)
         {
-            int rowCount = invoiceDataGridView.Rows.Count;
-
-            if ( !(rowCount > 0) )
+            try
             {
-                MessageBox.Show("HÓA ĐƠN CHƯA CÓ SẢN PHẨM!");
-                return;
-            }
+                int rowCount = invoiceDataGridView.Rows.Count;
 
-            string phone = phoneTextBox.Text.Trim();
+                if (!(rowCount > 0))
+                {
+                    MessageBox.Show("HÓA ĐƠN CHƯA CÓ SẢN PHẨM!");
+                    return;
+                }
 
-            if ( !(phone.Length > 0) )
-            {
-                MessageBox.Show("CHƯA NHẬP SỐ ĐIỆN THOẠI!");
-                return;
-            }
+                string phone = phoneTextBox.Text.Trim();
 
-            SqlDataReader r;
-            SqlCommand cmd;
-            string query;
+                if (!(phone.Length > 0))
+                {
+                    MessageBox.Show("CHƯA NHẬP SỐ ĐIỆN THOẠI!");
+                    return;
+                }
 
-            SqlConnection cn = new SqlConnection(Global.DATABASE);
-            cn.Open();
+                SqlDataReader r;
+                SqlCommand cmd;
+                string query;
 
-            query =
-                "SELECT * " +
-                "FROM Customer " + 
-                "WHERE phone = @phone";
-
-            cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@phone", phone);
-
-            r = cmd.ExecuteReader();
-            if ( !r.Read() )
-            {
-                r.Close();
+                SqlConnection cn = new SqlConnection(Global.DATABASE);
+                cn.Open();
 
                 query =
-                    "INSERT INTO Customer (phone) VALUES " +
-                    "(@phone)";
+                    "SELECT * " +
+                    "FROM Customer " +
+                    "WHERE phone = @phone";
 
                 cmd = new SqlCommand(query, cn);
                 cmd.Parameters.AddWithValue("@phone", phone);
 
-                cmd.ExecuteReader().Close();
-            }
-            r.Close();
+                r = cmd.ExecuteReader();
+                if (!r.Read())
+                {
+                    r.Close();
 
-            query =
-                "SELECT COUNT(*) " +
-                "FROM Invoice";
+                    query =
+                        "INSERT INTO Customer (phone) VALUES " +
+                        "(@phone)";
 
-            cmd = new SqlCommand(query, cn);
+                    cmd = new SqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@phone", phone);
 
-            r = cmd.ExecuteReader();
-            r.Read();
-            string invoice = (r.GetInt32(0) + 1).ToString();
-            r.Close();
-
-            query =
-                "INSERT INTO Invoice (code, customer, create_at) VALUES " +
-                "(@code, @customer, GETDATE())";
-
-            cmd = new SqlCommand(query, cn);
-            cmd.Parameters.AddWithValue("@code", invoice);
-            cmd.Parameters.AddWithValue("@customer", phone);
-            cmd.ExecuteReader().Close();
-
-            DataGridViewRow row;
-            for (int i = 0; i < rowCount; i++)
-            {
-                row = invoiceDataGridView.Rows[i];
+                    cmd.ExecuteReader().Close();
+                }
+                r.Close();
 
                 query =
-                    "INSERT INTO InvoiceDetail(invoice, product, amount, price, refund) VALUES " +
-                    "(@invoice, @product, @amount, @price, NULL)";
+                    "SELECT COUNT(*) " +
+                    "FROM Invoice";
 
                 cmd = new SqlCommand(query, cn);
-                cmd.Parameters.AddWithValue("@invoice", invoice);
-                cmd.Parameters.AddWithValue("@product", row.Cells[0].Value.ToString());
-                cmd.Parameters.AddWithValue("@amount", int.Parse(row.Cells[2].Value.ToString()));
-                cmd.Parameters.AddWithValue("@price", int.Parse(row.Cells[3].Value.ToString()));
+
+                r = cmd.ExecuteReader();
+                r.Read();
+                string invoice = (r.GetInt32(0) + 1).ToString();
+                r.Close();
+
+                query =
+                    "INSERT INTO Invoice (code, customer, create_at) VALUES " +
+                    "(@code, @customer, GETDATE())";
+
+                cmd = new SqlCommand(query, cn);
+                cmd.Parameters.AddWithValue("@code", invoice);
+                cmd.Parameters.AddWithValue("@customer", phone);
                 cmd.ExecuteReader().Close();
+
+                DataGridViewRow row;
+                for (int i = 0; i < rowCount; i++)
+                {
+                    row = invoiceDataGridView.Rows[i];
+
+                    query =
+                        "INSERT INTO InvoiceDetail(invoice, product, amount, price, refund) VALUES " +
+                        "(@invoice, @product, @amount, @price, NULL)";
+
+                    cmd = new SqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@invoice", invoice);
+                    cmd.Parameters.AddWithValue("@product", row.Cells[0].Value.ToString());
+                    cmd.Parameters.AddWithValue("@amount", int.Parse(row.Cells[2].Value.ToString()));
+                    cmd.Parameters.AddWithValue("@price", int.Parse(row.Cells[3].Value.ToString()));
+                    cmd.ExecuteReader().Close();
+                }
+
+                cn.Close();
+
+                MessageBox.Show("GHI HÓA ĐƠN THÀNH CÔNG!");
+
+                invoiceDataGridView.Rows.Clear();
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("error");
 
-            cn.Close();
-
-            MessageBox.Show("GHI HÓA ĐƠN THÀNH CÔNG!");
-
-            invoiceDataGridView.Rows.Clear();
+                Logger.GetInstance().write(ex);
+            }
         }
 
         private void invoiceHistoryButton_Click(object sender, EventArgs e)
